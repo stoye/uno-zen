@@ -78,6 +78,8 @@
       > li {
         display: block;
         margin: 0 1px 0 0;
+	background-color: #000;
+	opacity: 0.6;
 
         line-height: 1em;
 
@@ -90,7 +92,8 @@
           @include btn-cover-with-border;
 
           > a {
-            padding: .625rem 1.25rem;
+              padding: .625rem 1.25rem;
+	      opacity: 1;
           }
         }
 
