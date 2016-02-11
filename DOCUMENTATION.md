@@ -72,7 +72,7 @@ For do it automatically and easily we use [Gulp](http://gulpjs.com/), check `gul
 
 ## First Steps
 
-For local development you need to have a locally Ghost server, like this:
+For local development you need to have a local Ghost server running. It should look like this:
 
 ```bash
 node index.js
@@ -88,22 +88,39 @@ Note that my local Ghost is running in the port `2387`.
 With your local Ghost running, open another terminal and enter in the folder `content/themes` of your local Ghost and clone the theme repository and install the dependencies for local development:
 
 ```bash
-$ git clone https://github.com/Kikobeats/uno-zen && npm install && bower install
+$ git clone https://github.com/Kikobeats/uno-zen && cd uno-zen && npm install && bower install
 ```
 
 Just run `gulp` command in the theme terminal. Now you have a development scenario, and looks like this:
 
 ![](http://i.imgur.com/Gf4gPR2.png)
 
-With the `gulp` command you are automatically launching the task for compile the assets and reload the server when your assets change. For do it we uses [BrowserSync](http://www.browsersync.io) that is setup as middleware between the theme and the Ghost. You can connect different devices and try the responsive of the website as well.
+With the default `gulp` command you are automatically launching the task that will compile all assets and reload the server when those assets change. To do that, we use [BrowserSync](http://www.browsersync.io), which is set up as middleware between the theme and Ghost. You can connect different devices and see how the website is responsive as well.
 
-As the screenshot, you need to use for the proxying the same port as your Ghost server. If your Ghost server is in a different port than `2387` you need to modify `gulpfile.coffee` and put the correct port.
+As you can see in the screenshot (top right window), BrowserSync needs to know which port to proxy, and it needs to be the same port as your Ghost server. If your Ghost server is in a different port than `2387` you need to modify `gulpfile.coffee` and add the correct port. BrowserSync should remain on 3000.
 
 ## Customization
 
+### Highlight Code Support
+
+The code highlight is based in [Prism](http://prismjs.com/). By default, the languages supported are:
+
+```
+markup, css, c, javascript
+```
+
+If you want to support more languages:
+
+1) go to [prismjs.com/download](http://prismjs.com/download.html),
+2) generate your custom highlight code
+3) paste in the [prism file](https://github.com/Kikobeats/uno-zen/blob/master/assets/scss/modules/_prism.scss)
+3) compile the assets
+
+Be careful, the current prism code is integrated with the color schema of the theme. You need to edit manually to get the correct look and feel.
+
 ### Google Analytics
 
-Go to Ghost Admin panel → `Code Injection` → `Blog Header` and add:
+Go to Ghost `Admin Panel` → `Code Injection` → `Blog Header` and add:
 
 ```html
 <script>
@@ -113,7 +130,7 @@ var ga_id = 'UA-YOUR_ID_HERE';
 
 ### Comments
 
-Go to Ghost Admin panel → `Code Injection` → `Blog Header` and add:
+Go to Ghost `Admin Panel` → `Code Injection` → `Blog Header` and add:
 
 ```html
 <script>
@@ -121,13 +138,29 @@ var disqus_shortname = 'YOUR_DISQUS_SHORTCUT_HERE';
 </script>
 ```
 
-### Sidebar title
+### Open Button
 
-By default, the title that you see in the open page of your blog is extracted from your blog settings (Admin panel → Blog Title).
+By default, the open buttons works binding the event of open the blog with a button called 'Posts' created into Ghost Navigation section. Here is the piece of code that create the bind:
+
+```js
+var openButton = window.open_button || '.nav-posts > a'
+```
+
+As you see, you can specify a different button selector. For example, if You want to open your blog under 'Blog' button, then you add this in `Admin Panel` → `Code Injection` → `Blog Header`:
+
+```html
+<script>
+var open_button = '.nav-blog > a'
+</script>
+```
+
+### Profile title
+
+By default, the title that you see in the open page of your blog is extracted from your blog settings (`Admin Panel` → Blog Title).
 
 If you want to customize it, you can do it:
 
-Go to Ghost Admin panel → `Code Injection` → `Blog Header` and add:
+Go to Ghost ``Admin Panel`` → `Code Injection` → `Blog Header` and add:
 
 ```html
 <script>
@@ -135,15 +168,29 @@ var profile_title = 'Kiko Beats';
 </script>
 ```
 
-### Sidebar subtitle
+### Profile subtitle
 
 The purpose of the subtitle is resume the bio in a phrase. This will be shown in the mobile/tablet version instead of the bio.
 
-Go to Ghost Admin panel → `Code Injection` → `Blog Header` and add:
+Go to Ghost `Admin Panel` → `Code Injection` → `Blog Header` and add:
 
 ```html
 <script>
 var profile_resume ='Software Engineer';
+</script>
+```
+
+### Posts list headline
+
+By default, the title that you see in the page with your blog posts list is 'Writings.' but you might want to adjust this text.
+
+If you want to customize it, you can do it:
+
+Go to Ghost `Admin Panel` → `Code Injection` → `Blog Header` and add:
+
+```html
+<script>
+var posts_headline = 'Random Stuff';
 </script>
 ```
 
@@ -157,21 +204,21 @@ Edit the file `partials/social.hbs`.
 
 ### Links
 
-Go to Ghost Admin panel → `Navigation` and add/edit items.
+Go to Ghost `Admin Panel` → `Navigation` and add/edit items.
 
 "Blog" link is always included by default, so you don't need to add it manually.
 
 ### Favicon
 
-Create your favicons with [Favicon Generator](http://realfavicongenerator.net/) and puts it in `assets/img`.
+Create your favicons with [Favicon Generator](http://realfavicongenerator.net/) and put it into `assets/img`.
 
 ### Cover
 
-Go to Ghost Admin panel → General → `Blog Cover`
+Go to Ghost `Admin Panel` → General → `Blog Cover`
 
 ### Cover Filter
 
-The linear gradient of the cover filter is based in `$cover-primary` and `$cover-secondary` colors. If you want to adapt the filter for your cover, check [background-filter](https://github.com/Kikobeats/uno-zen/blob/master/assets/scss/modules/_mixins.scss#L11) mixin.
+The linear gradient of the cover filter is based in `$cover-primary` and `$cover-secondary` colors. If you want to adapt the filter for your cover, check [background-filter](https://github.com/Kikobeats/uno-zen/blob/master/assets/scss/modules/_utils.scss#L19) mixin.
 
 ### Custom static pages
 
@@ -184,3 +231,7 @@ You can enable the multiaccount support editing [posts.hbs](https://github.com/K
 ## Preparing for production
 
 When you consider that the development is done and you want to deploy a new version, package your code using `gulp build` command, that minify and concatenate all necessary code.
+
+## Usage with Ghost(Pro)
+
+Run the 'scripts/build.sh' command to create an archive of the theme files. The default archive is called 'uno-zen.zip', but you can pass a preferred name for the archive, for example 'scripts/build.sh uno-zen.2.6.8.zip' will create an archive with the name 'uno-zen.2.6.8.zip'. This archive can then be uploaded through the blog admin panel at [ghost.org](https://ghost.org/).
